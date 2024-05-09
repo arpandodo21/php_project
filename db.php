@@ -1,6 +1,7 @@
 <?php class database
 {
     private $host, $username, $password, $database,$conn;
+    public $baseUrl ="http://localhost/php_project/"; 
     public $data;
     public function __construct($database = '', $host = 'localhost', $username = 'root', $password = '')
     {
