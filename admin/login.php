@@ -11,7 +11,7 @@ $baseUrl = $object->baseUrl;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <title>Admin Login</title>
 </head>
 
 <body>
@@ -28,24 +28,19 @@ $baseUrl = $object->baseUrl;
                                 <p class="text-white-50 mb-5">Please enter your login and password!</p>
                                 <form id="login-form">
                                     <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        <label class="form-label" for="typeEmailX">Email</label>
                                         <input type="email" id="typeEmailX" class="form-control form-control-lg"
                                             name="email" />
-                                        <label class="form-label" for="typeEmailX">Email</label>
                                     </div>
 
                                     <div data-mdb-input-init class="form-outline form-white mb-4">
+                                        <label class="form-label" for="typePasswordX">Password</label>
                                         <input type="password" id="typePasswordX" class="form-control form-control-lg"
                                             name="password" />
-                                        <label class="form-label" for="typePasswordX">Password</label>
                                     </div>
 
                                     <!-- <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a>
                                 </p> -->
-<select name="" id="">
-    <option value="">small</option>
-    <option value="">medium</option>
-    <option value="">large</option>
-</select>
                                     <button data-mdb-button-init data-mdb-ripple-init
                                         class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
                                 </form>
@@ -69,6 +64,9 @@ $baseUrl = $object->baseUrl;
             </div>
         </div>
     </section>
+    <div class="loader">
+
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
     <script>
@@ -92,6 +90,16 @@ $baseUrl = $object->baseUrl;
                     password: {
                         required: "Please enter your password"
                     }
+                },
+                submitHandler: function(form) {
+                    $.ajax({
+                        url:<?php echo $_SERVER['PHP_SELF']; ?>,
+                        type:'POST',
+                        data:$(form).serialize(),
+                        beforeSend:function(){
+
+                        }
+                    })
                 }
             });
         });
