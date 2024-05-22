@@ -1,7 +1,27 @@
 <?php
 require_once '../db.php';
-$object = new database;
+$object = new database('php_project');
 $baseUrl = $object->baseUrl;
+if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
+    $object->redirect($baseUrl . 'admin/dashboard.php');
+    // print_r($_SESSION['user']);
+} else {
+    unset($_SESSION['user']);
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['email']) && isset($_POST['password'])) {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        if ($object->checkUser($email, $password)) {
+            echo json_encode(array('status' => 'success'));
+            exit;
+        } else {
+            echo json_encode(array('status' => 'error'));
+            exit;
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -64,11 +84,14 @@ $baseUrl = $object->baseUrl;
             </div>
         </div>
     </section>
-    <div class="loader">
+    <!-- <div class="loader">
 
-    </div>
+    </div> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
             $("#login-form").validate({
@@ -91,15 +114,42 @@ $baseUrl = $object->baseUrl;
                         required: "Please enter your password"
                     }
                 },
-                submitHandler: function(form) {
+                submitHandler: function (form) {
                     $.ajax({
-                        url:<?php echo $_SERVER['PHP_SELF']; ?>,
-                        type:'POST',
-                        data:$(form).serialize(),
-                        beforeSend:function(){
+                        url: '<?php echo $baseUrl . 'admin/login.php' ?>',
+                        type: 'POST',
+                        data: $(form).serialize(),
+                        beforeSend: function () {
+                            $('body').LoadingOverlay('show');
+                        },
+                        success: function (data) {
+                            $('body').LoadingOverlay('hide');
+                            let res = JSON.parse(data);
+                            if (res.status == 'success') {
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "success",
+                                    title: "Login Successful",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "error",
+                                    title: "Login Unsuccessful",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                            setTimeout(function () {
+                                window.location.href = '<?= $baseUrl . "admin/dashboard.php" ?>';
+                            }, 2000);
 
+                        }, error: function (err) {
+                            console.log(err);
                         }
-                    })
+                    });
                 }
             });
         });
