@@ -5,14 +5,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
-<script src="<?php echo $baseUrl; ?>assets/js/scripts.js"></script>
+<script src="<?php echo $object->baseUrl; ?>assets/js/scripts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
     crossorigin="anonymous"></script>
-<script src="<?php echo $baseUrl; ?>assets/js/datatables-simple-demo.js"></script>
+<script src="<?php echo $object->baseUrl; ?>assets/js/datatables-simple-demo.js"></script>
 <script>
-    $(document).ready(function () {
-        const logout = () => {
+    const logout = () => {
             Swal.fire({
                 title: "Are you sure?",
                 icon: "warning",
@@ -23,35 +22,34 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "<?php echo $object->logout; ?>",
+                        url: "<?php echo $object->baseUrl; ?>admin/logout.php",
                         data: { logout: 1 },
+                        type: 'POST',
                         beforeSend: function () {
                             $('body').LoadingOverlay('show');
                         },
                         success: function (res) {
-                            $('body').LoadingOverlay('show');
+                            $('body').LoadingOverlay('hide');
                             let data = JSON.parse(res);
-                            if (data.success) {
+                            if (data.status == 'success') {
                                 Swal.fire({
-                                    title: "Logged Out Successfully!",
-                                    icon: "success"
+                                    title: data.message,
+                                    icon: "success",
+                                    showConfirmButton: false
                                 });
-                                setTimeout(()=>{
-
-                                },2000);
+                                setTimeout(() => {
+                                    window.location.href = "<?= $object->baseUrl ?>admin/login.php"
+                                }, 2000);
                             }
+                        },
+                        error:function(err){
+                            console.log(err)
                         }
-                    });
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success"
                     });
                 }
             });
 
         }
-    });
 </script>
 </body>
 

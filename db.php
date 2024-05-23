@@ -1,8 +1,10 @@
-<?php class database
+<?php 
+// require_once (dirname(__FILE__) ."/routes/routes.php");
+class database
 {
-    use Routes;
+    // use routes;
     private $host, $username, $password, $database, $conn;
-    
+    public $baseUrl = "http://localhost/php_project/";
     public $data;
     public function __construct($database = '', $host = 'localhost', $username = 'root', $password = '')
     {
@@ -252,7 +254,7 @@
     }
 
     /*To get user data if authenticated
-    parameters: @url
+    parameters: N.A
     Author: Arpan Ghosh
     */
     public function getUserFromSession() {

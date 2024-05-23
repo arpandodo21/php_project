@@ -1,7 +1,11 @@
 <?php
-require_once '../db.php';
-$object = new database('php_project');
-$baseUrl = $object->baseUrl; 
+require_once '../common.php';
+$userData = $object->getUserFromSession();
+
+// print_r($userData);die();
+if ($userData == '') {
+    $object->redirect($object->baseUrl.'admin/login.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

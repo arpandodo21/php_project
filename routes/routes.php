@@ -1,12 +1,12 @@
 <?php 
-trait Routes
+trait routes
 {
     public $baseUrl = "http://localhost/php_project/";
-    public $assetUrl = $this->baseUrl . "assets/";
-    public $assetCss = $this->baseUrl . "assets/css/";
-    public $assetJs = $this->baseUrl . "assets/js/";
-    public $assetImage = $this->baseUrl . "assets/images/";
-    public $adminLogin = $this->$baseUrl . "admin/login.php";
-    public $adminDashboard = $this->$baseUrl . "admin/login.php";
-    public $logout = $this->$baseUrl . "admin/logout.php";
+    public $assetURL = $this->baseUrl . "assets/";
+    public $assetCssURL = $this->assetURL . "assets/css/";
+    public $assetJsURL = $this->assetURL . "assets/js/";
+    public $assetImageURL = $this->assetURL . "assets/images/";
+    public $adminLoginURL = $this->baseUrl . "admin/login.php";
+    public $adminDashboardURL = $this->baseUrl . "admin/dashboard.php";
+    public $logoutURL = $this->baseUrl . "admin/logout.php";
 }

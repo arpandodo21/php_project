@@ -1,15 +1,9 @@
 <?php
 require_once './layouts/header.php';
-$userData = $object->getUserFromSession();
-
-// print_r($userData);
-if (isset($userData) && $userData == '') {
-    $object->redirect($baseUrl . 'admin/login.php');
-}
 
 ?>
 <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-<link href="<?php echo $baseUrl; ?>assets/css/styles.css" rel="stylesheet" />
+<link href="<?php echo $object->baseUrl; ?>assets/css/styles.css" rel="stylesheet" />
 <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 <title>Admin Dashboard</title>
 </head>
@@ -17,7 +11,7 @@ if (isset($userData) && $userData == '') {
 <body>
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="<?php echo $baseUrl; ?>admin/login.php">Admin Portal</a>
+        <a class="navbar-brand ps-3" href="<?php echo $object->baseUrl; ?>admin/dashboard.php">Admin Portal</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
                 class="fas fa-bars"></i></button>
@@ -41,7 +35,7 @@ if (isset($userData) && $userData == '') {
                     <li>
                         <hr class="dropdown-divider" />
                     </li>
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="logout()">Logout</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onClick="logout()">Logout</a></li>
                 </ul>
             </li>
         </ul>
@@ -52,7 +46,7 @@ if (isset($userData) && $userData == '') {
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Core</div>
-                        <a class="nav-link" href="<?php echo $baseUrl; ?>admin/login.php ">
+                        <a class="nav-link" href="<?php echo $object->baseUrl; ?>admin/dashboard.php">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
