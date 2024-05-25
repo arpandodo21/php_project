@@ -7,7 +7,6 @@ if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
     // print_r($_SESSION['user']);
 } else {
     unset($_SESSION['user']);
-    $object->redirect($baseUrl . 'admin/login.php');
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

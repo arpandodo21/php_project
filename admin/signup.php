@@ -7,7 +7,6 @@ if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
     // print_r($_SESSION['user']);
 } else {
     unset($_SESSION['user']);
-    $object->redirect($baseUrl . 'admin/signup.php');
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -101,9 +100,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            $("#login-form").validate({
+            $("#signup-form").validate({
                 rules: {
                     // compound rule
+                    name:{
+                        required: true,
+                        digits: false
+                    },
                     email: {
                         required: true,
                         email: true
@@ -113,6 +116,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                 },
                 messages: {
+                    name:{
+                        required: "Please enter your name",
+                        digits: "Please dont enter any number"
+                    },
                     email: {
                         required: "Please enter your email",
                         email: "Your email address must be in the format of name@domain.com"

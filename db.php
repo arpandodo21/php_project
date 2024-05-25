@@ -263,6 +263,12 @@ class database
         }
     }
 
+    public function createUser($input = array()) {
+        if(count($input) > 0) {
+            $fullname = $input['name'];
+        }
+    }
+
     public function __destruct()
     {
         mysqli_close($this->conn);
