@@ -1,3 +1,17 @@
+<footer class="py-4 bg-light mt-auto">
+    <div class="container-fluid px-4">
+        <div class="d-flex align-items-center justify-content-between small">
+            <div class="text-muted">Copyright &copy; Your Website 2023</div>
+            <div>
+                <a href="#">Privacy Policy</a>
+                &middot;
+                <a href="#">Terms &amp; Conditions</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script
@@ -12,44 +26,44 @@
 <script src="<?php echo $object->baseUrl; ?>assets/js/datatables-simple-demo.js"></script>
 <script>
     const logout = () => {
-            Swal.fire({
-                title: "Are you sure?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Logout"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "<?php echo $object->baseUrl; ?>admin/logout.php",
-                        data: { logout: 1 },
-                        type: 'POST',
-                        beforeSend: function () {
-                            $('body').LoadingOverlay('show');
-                        },
-                        success: function (res) {
-                            $('body').LoadingOverlay('hide');
-                            let data = JSON.parse(res);
-                            if (data.status == 'success') {
-                                Swal.fire({
-                                    title: data.message,
-                                    icon: "success",
-                                    showConfirmButton: false
-                                });
-                                setTimeout(() => {
-                                    window.location.href = "<?= $object->baseUrl ?>admin/login.php"
-                                }, 2000);
-                            }
-                        },
-                        error:function(err){
-                            console.log(err)
+        Swal.fire({
+            title: "Are you sure?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Logout"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "<?php echo $object->baseUrl; ?>admin/logout.php",
+                    data: { logout: 1 },
+                    type: 'POST',
+                    beforeSend: function () {
+                        $('body').LoadingOverlay('show');
+                    },
+                    success: function (res) {
+                        $('body').LoadingOverlay('hide');
+                        let data = JSON.parse(res);
+                        if (data.status == 'success') {
+                            Swal.fire({
+                                title: data.message,
+                                icon: "success",
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => {
+                                window.location.href = "<?= $object->baseUrl ?>admin/login.php"
+                            }, 2000);
                         }
-                    });
-                }
-            });
+                    },
+                    error: function (err) {
+                        console.log(err)
+                    }
+                });
+            }
+        });
 
-        }
+    }
 </script>
 </body>
 

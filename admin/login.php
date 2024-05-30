@@ -1,7 +1,5 @@
 <?php
-require_once '../db.php';
-$object = new database('php_project');
-$baseUrl = $object->baseUrl;
+require_once '../common.php';
 if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
     $object->redirect($baseUrl . 'admin/dashboard.php');
     // print_r($_SESSION['user']);

@@ -1,7 +1,5 @@
 <?php
-require_once '../db.php';
-$object = new database('php_project');
-$baseUrl = $object->baseUrl;
+require_once '../common.php';
 if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
     $object->redirect($baseUrl . 'admin/dashboard.php');
     // print_r($_SESSION['user']);
@@ -71,16 +69,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <button data-mdb-button-init data-mdb-ripple-init
                                         class="btn btn-outline-light btn-lg px-5" type="submit">Sign Up</button>
                                 </form>
-                                <div class="d-flex justify-content-center text-center mt-4 pt-1">
+                                <!-- <div class="d-flex justify-content-center text-center mt-4 pt-1">
                                     <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
                                     <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
                                     <a href="#!" class="text-white"><i class="fab fa-google fa-lg"></i></a>
-                                </div>
+                                </div> -->
 
                             </div>
 
                             <div>
-                                <p class="mb-0">Already have an Account? <a href="<?= $baseUrl ?>"
+                                <p class="mb-0">Already have an Account? <a href="<?= $baseUrl ?>admin/login.php"
                                         class="text-white-50 fw-bold">Login</a>
                                 </p>
                             </div>
