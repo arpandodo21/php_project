@@ -13,11 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['email']) && isset($_POST['password'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
-        if ($object->createUser($_POST)) {
-            echo json_encode(array('status' => 'success'));
+        $res = $object->createUser($_POST);
+        if ($res['status']) {
+            echo json_encode(array('status' => $res['status'],'message'=>$res['message']));
             exit;
         } else {
-            echo json_encode(array('status' => 'error'));
+            echo json_encode(array('status' => $res['status'],'message'=>$res['message']));
             exit;
         }
     }
@@ -51,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <div data-mdb-input-init class="form-outline form-white mb-4">
                                         <label class="form-label" for="typeNameX">Your Full Name</label>
                                         <input type="text" id="typeNameX" class="form-control form-control-lg"
-                                            name="name" />
+                                            name="name" oninput="this.value = this.value.replace(/[^a-zA-Z ]/g, '')"/>
                                     </div>
                                     <div data-mdb-input-init class="form-outline form-white mb-4">
                                         <label class="form-label" for="typeEmailX">Email</label>
@@ -139,11 +140,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         success: function (data) {
                             $('body').LoadingOverlay('hide');
                             let res = JSON.parse(data);
-                            if (res.status == 'success') {
+                            console.log(res);
+                            if (res.status == true) {
                                 Swal.fire({
                                     position: "top-end",
                                     icon: "success",
-                                    title: "Login Successful",
+                                    title: res.message,
                                     showConfirmButton: false,
                                     timer: 1500
                                 });
@@ -154,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 Swal.fire({
                                     position: "top-end",
                                     icon: "error",
-                                    title: "Login Unsuccessful",
+                                    title: res.message,
                                     showConfirmButton: false,
                                     timer: 1500
                                 });

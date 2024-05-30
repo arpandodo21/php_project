@@ -1,4 +1,4 @@
-<?php 
+<?php
 // require_once (dirname(__FILE__) ."/routes/routes.php");
 class database
 {
@@ -248,8 +248,9 @@ class database
     Author: Arpan Ghosh
      */
 
-    public function redirect($url) {
-        header('Location: '.$url);
+    public function redirect($url)
+    {
+        header('Location: ' . $url);
         die();
     }
 
@@ -257,15 +258,41 @@ class database
     parameters: N.A
     Author: Arpan Ghosh
     */
-    public function getUserFromSession() {
-        if(isset($_SESSION['user']) && $_SESSION['user'] != '') {
+    public function getUserFromSession()
+    {
+        if (isset($_SESSION['user']) && $_SESSION['user'] != '') {
             return $_SESSION['user'];
         }
     }
 
-    public function createUser($input = array()) {
-        if(count($input) > 0) {
-            $fullname = $input['name'];
+    /*To create new user 
+    parameters: N.A
+    Author: Arpan Ghosh
+    */
+
+    public function createUser($input = array(), $tableName = 'users')
+    {
+        if (count($input) > 0) {
+            $this->data['fullname'] = filter_var($input['name'], FILTER_SANITIZE_STRING);
+            $this->data['email'] = filter_var($input['email'], FILTER_SANITIZE_EMAIL);
+            $this->data['password'] = filter_var($input['password'], FILTER_SANITIZE_STRING);
+            if ($this->data['fullname'] && $this->data['email'] && $this->data['password']) {
+                $query = "SELECT * FROM users WHERE email = '" . $this->data['email'] . "'";
+                $result = mysqli_query($this->conn, $query);
+                if (mysqli_num_rows($result) > 0) {
+                    return array('status' => false, 'message' => 'User is already registered!');
+                } else {
+                    $this->data['hashPassword'] = password_hash($this->data['password'], PASSWORD_DEFAULT);
+                    $query = "INSERT INTO `$tableName` (`name`, `email`, `password`, `password_original`) VALUES ('" . $this->data['fullname'] . "','" . $this->data['email'] . "','" . $this->data['hashPassword'] . "','" . $this->data['password'] . "')";
+
+                    $res = $this->conn->query($query);
+                    if ($res) {
+                        return array("status"=> true, "message"=> "Registered successfully!");
+                    }else{
+                        return array("status"=> false, "message"=> "Not registered successfully!");
+                    }
+                }
+            }
         }
     }
 
