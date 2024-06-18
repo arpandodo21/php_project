@@ -3,17 +3,40 @@
 class database
 {
     // use routes;
-    private $host, $username, $password, $database, $conn;
+    private $host, $username, $password, $database;
+    public $conn;
     public $baseUrl = "http://localhost/php_project/";
     public $data;
+    public $pages = [
+        'links' => [
+            'dashboard.php' => 'Dashboard',
+            'products.php' => 'Products',
+            'crm-creds.php' => 'CRM Credentials',
+            'provider.php' => 'Provider',
+            'provider-path.php' => 'Provider Paths',
+            'roles.php' => 'User Role'
+        ],
+        'icons' => [
+            'dashboard.php' => 'fa-tachometer-alt',
+            'products.php' => 'fa-product-hunt',
+            'crm-creds.php' => 'fa-user-secret',
+            'provider.php' => 'fa-handshake',
+            'provider-path.php' => 'fa-route',
+            'roles.php' => 'fa-user-shield',
+        ],
+
+    ];
     public function __construct($database = '', $host = 'localhost', $username = 'root', $password = '')
     {
         $this->host = $host;
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
-        $this->conn = mysqli_connect($this->host, $this->username, $this->password, $this->database);
+        $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
         session_start();
+        if ($this->conn->connect_error) {
+            die("Connection failed: " . $this->conn->connect_error);
+        }
         // unset($_SESSION['user']);
     }
 
@@ -94,87 +117,40 @@ class database
     Author: Arpan Ghosh
      */
 
-    /*
-    public function add_data_to_table($tableName = null, $inputData = [])
+    public function add_data_to_table($tableName = null, $inputData = [],$debug = false)
     {
-        if ($tableName && count($inputData) > 0) {
-            $this->conn = mysqli_connect($this->host, $this->username, $this->password, $this->database);
-            $query = 'INSERT INTO ' . $tableName;
-            $fields = '';
-            $values = '';
-            echo "<pre>";print_r($inputData);die;
-            if (is_array($inputData)) {
-                if (count($inputData) === 1) {
-                    foreach ($inputData as $key => $val) {
-                        $fields .= $key;
-                        if(is_array($val)){
-                            foreach($val as $v){
-                                
-                                if (count($val) > 1 && $v == @end($val)) {
-                                    $values .= "('".$v . "')";
-                                } else {
-                                    $values .= "('".$v . "'),";
-                                }
-                            }
-                        }else{
-                            $values .= "('".$val . "')";
-                        }
-                    }
-                    $query .= "(" . $fields . ") VALUES " . $values . "";
-                    echo $query;exit;
-                    if (mysqli_query($this->conn, $query)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    foreach ($inputData as $key => $val) {
-                        if ($key == @end(array_keys($inputData))) {
-                            $fields .= $key;
-                            if(is_array($val)){
-                                foreach($val as $v){
-                                    
-                                    if (count($val) > 1 && $v == @end($val)) {
-                                        $values .= "('".$v . "')";
-                                    } else {
-                                        $values .= "('".$v . "'),";
-                                    }
-                                }
-                            }else{
-                                $values .= $val . ")";
-                            }
-                        } else {
-                            $fields .= $key . ",";
-                            if(is_array($val)){
-                                $i = 0;
-                                foreach($val as $v){
-                                    
-                                    if (count($val) > 1 && $v == @end($val)) {
-                                        $values .= "('".$key[$i] . "','".$key[$i]."')";
-                                    } else {
-                                        $values .= "('".$key[$i] . "','".$key[$i]."'),";
-                                    }
-                                    $i++;
-                                }
-                            }else{
-                                $values .= $val . ")";
-                            }
-                        }
-                    }
-                    $query .= "(" . $fields . ") VALUES " . $values . "";
+        $fields = implode(", ", array_keys($inputData[0]));
+        $placeholders = implode(", ", array_fill(0, count($inputData[0]), '?'));
 
-                    echo $query;exit;
-                    if (mysqli_query($this->conn, $query)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            }
-            mysqli_close($this->conn);
+        $sql = "INSERT INTO $tableName ($fields) VALUES ($placeholders)";
+        if ($debug) {
+            // Print the SQL query for debugging
+            echo "SQL Query: " . $sql . "\n";
         }
+        $stmt = $this->conn->prepare($sql);
+        if ($stmt === false) {
+            die("Error preparing statement: " . $this->conn->error);
+        }
+
+        foreach ($inputData as $data) {
+            if ($debug) {
+                // Print the data being inserted for debugging
+                echo "Data: " . json_encode($data) . "\n";
+            }
+            $stmt->bind_param(str_repeat('s', count($data)), ...array_values($data));
+            
+            if (!$debug) {
+                // Only execute the statement if not in debug mode
+                $stmt->execute();
+            }
+        }
+
+        if (!$debug) {
+            $stmt->close();
+        }
+
+
     }
-    */
 
     /*To get single data from any table
     parameters: @tableName, @data as array
@@ -287,9 +263,9 @@ class database
 
                     $res = $this->conn->query($query);
                     if ($res) {
-                        return array("status"=> true, "message"=> "Registered successfully!");
-                    }else{
-                        return array("status"=> false, "message"=> "Not registered successfully!");
+                        return array("status" => true, "message" => "Registered successfully!");
+                    } else {
+                        return array("status" => false, "message" => "Not registered successfully!");
                     }
                 }
             }
