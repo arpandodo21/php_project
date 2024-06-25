@@ -32,6 +32,7 @@ class database
         $this->database = $database;
         $this->username = $username;
         $this->password = $password;
+        $this->data = '';
         $this->conn = new mysqli($this->host, $this->username, $this->password, $this->database);
         session_start();
         if ($this->conn->connect_error) {
@@ -85,14 +86,27 @@ class database
      */
     public function get_all_records($tableName = null, $fields = "*", $orderBy = 'id DESC')
     {
+        $this->data = [];
         if (is_array($fields)) {
             $fields = implode(",", $fields);
         }
         if ($tableName) {
-            $query = 'SELECT ' . $fields . ' FROM ' . $tableName . ' ORDERBY ' . $orderBy;
-            $this->data = mysqli_query($this->conn, $query);
-            $this->data = (mysqli_num_rows($this->data) > 0) ? mysqli_fetch_assoc($this->data) : null;
-            mysqli_close($this->conn);
+            $query = 'SELECT ' . $fields . ' FROM ' . $tableName . ' ORDER BY ' . $orderBy;
+            $result = mysqli_query($this->conn, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+                if ($fields != '*') {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        foreach ($row as $field => $value) {
+                            $this->data[$field][] = $value;
+                        }
+                    }
+                } else {
+                    while ($row = $result->fetch_assoc()) {
+                        $this->data[] = $row;
+                    }
+                }
+            }
             return $this->data;
         }
     }
@@ -117,7 +131,7 @@ class database
     Author: Arpan Ghosh
      */
 
-    public function add_data_to_table($tableName = null, $inputData = [],$debug = false)
+    public function add_data_to_table($tableName = null, $inputData = [], $debug = false)
     {
         $fields = implode(", ", array_keys($inputData[0]));
         $placeholders = implode(", ", array_fill(0, count($inputData[0]), '?'));
@@ -138,7 +152,7 @@ class database
                 echo "Data: " . json_encode($data) . "\n";
             }
             $stmt->bind_param(str_repeat('s', count($data)), ...array_values($data));
-            
+
             if (!$debug) {
                 // Only execute the statement if not in debug mode
                 $stmt->execute();
@@ -269,6 +283,26 @@ class database
                     }
                 }
             }
+        }
+    }
+
+    /* To get User Id roles priviledges
+     */
+    public function getUserWiseRoles(){
+
+    }
+
+    public function getRoleWisePriviledges($roleId){
+        if($roleId){
+            $query = "SELECT r.id AS roleId, r.name AS role_name, GROUP_CONCAT( p.name ORDER BY p.name SEPARATOR ', ' ) AS PRIVILEGES FROM roles r JOIN role_privileges rp ON r.id = rp.role_id JOIN PRIVILEGES p ON rp.privilege_id = p.id WHERE r.id=$roleId GROUP BY r.id, r.name";
+
+            $result = $this->conn->query($query);
+            if($result->num_rows > 0){
+                while($row = $result->fetch_assoc()) {
+                    $this->data[] = explode(', ', $row['privileges']);
+                }
+            }
+            return $this->data;
         }
     }
 

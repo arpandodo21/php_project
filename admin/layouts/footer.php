@@ -25,6 +25,14 @@
     crossorigin="anonymous"></script>
 <script src="<?php echo $object->baseUrl; ?>assets/js/datatables-simple-demo.js"></script>
 <script>
+    $(document).ready(function () {
+
+        // Handle form submission
+        $('#rolePrivilegesForm').submit(function (e) {
+            e.preventDefault();
+            updateRolePrivileges();
+        });
+    });
     const logout = () => {
         Swal.fire({
             title: "Are you sure?",
@@ -64,6 +72,74 @@
         });
 
     }
+
+    //for fetching roles
+    // const fetchRole = (e) => {
+    //     if (e.value == '') {
+    //         $('.role-checkbox').show()
+    //     } else {
+    //         $('.role-checkbox').hide()
+    //         $.ajax({
+    //             url: "<?= $object->baseUrl . '/admin/update-role.php' ?>",
+    //             data: { id: e.value,priviledges: },
+    //             type: 'POST',
+    //             beforeSend: function () {
+    //                 $('body').LoadingOverlay('show');
+    //             },
+    //             success: function (res) {
+    //                 $('body').LoadingOverlay('hide');
+    //                 console.log(res);
+    //             },
+    //             error: function (err) {
+    //                 console.log(err);
+    //             }
+    //         })
+    //     }
+
+    // }
+
+    function loadRolePrivileges(elem) {
+        
+        if (elem.value!="") {
+            let roleId = elem.value;
+            $.ajax({
+                url: '<?= $object->baseUrl . '/common.php' ?>',
+                method: 'POST',
+                data: { role_id: roleId },
+                beforeSend: function () {
+                    $('body').LoadingOverlay('show');
+                },
+                success: function (data) {
+                    // let rolePrivileges = JSON.parse(data);
+                    console.log(data);
+                    // $('#privilegesContainer input[type="checkbox"]').each(function () {
+                    //     $(this).prop('checked', rolePrivileges.includes($(this).val()));
+                    // });
+                    $('body').LoadingOverlay('hide');
+                },
+                error:function(err){
+                    console.log(err);
+                }
+            });
+        } else {
+            $('#privilegesContainer input[type="checkbox"]').prop('checked', false);
+        }
+    }
+
+    function updateRolePrivileges() {
+        var formData = $('#rolePrivilegesForm').serialize();
+        console.log(formData)
+        // $.ajax({
+        //     url: 'update_role_privileges.php',
+        //     method: 'POST',
+        //     data: formData,
+        //     success: function (response) {
+        //         alert(response);
+        //     }
+        // });
+    }
+
+
 </script>
 </body>
 

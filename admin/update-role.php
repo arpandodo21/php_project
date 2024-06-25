@@ -1,42 +1,14 @@
 <?php
+
 require_once './layouts/header.php';
-
 // Fetch roles
-$sql = "SELECT * FROM roles";
-$result = $object->conn->query($sql);
-$roles = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $roles[] = $row;
-    }
-}
-
+$roles = $object->get_all_records('roles');
 // Fetch privileges
-$sql = "SELECT * FROM privileges";
-$result = $object->conn->query($sql);
-$privileges = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $privileges[] = $row;
-    }
-}
+$privileges = $object->get_all_records('privileges');
+$rolePrivileges = $object->get_all_records('privileges', ['id']);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $roleName = $_POST['role_name'];
-    $privileges = isset($_POST['privileges']) ? $_POST['privileges'] : [];
+// $userWiseRoles = $object->getRoleWisePriviledges($roleId);
 
-    // Insert role
-    $sql = "INSERT INTO roles (name) VALUES ('$roleName')";
-    if ($conn->query($sql) === TRUE) {
-        $roleId = $conn->insert_id;
-
-        // Insert role privileges
-        foreach ($privileges as $privilegeId) {
-            $sql = "INSERT INTO role_privileges (role_id, privilege_id) VALUES ('$roleId', '$privilegeId')";
-            $conn->query($sql);
-        }
-    }
-}
 
 ?>
 <div id="layoutSidenav">
@@ -53,13 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 Update Role Priviledges
                             </div>
                             <div class="card-body">
-                                <form method="POST" action="">
+                                <form method="POST" id="rolePrivilegesForm">
                                     <div class="mb-3">
-                                        <label for="roleName" class="form-label">Role Name</label>
-                                        <input type="text" class="form-control" id="roleName" name="role_name"
-                                            value="<?= $role['name'] ?? '' ?>" required>
+                                        <label for="role_id" class="form-label">Role Name</label>
+                                        <select name="role_id" class="form-control" onchange="loadRolePrivileges(this)">
+                                            <option value="">Select Role</option>
+                                            <?php foreach ($roles as $role) { ?>
+
+                                                <option value="<?= $role['id'] ?>"><?= ucfirst($role['NAME']) ?></option>
+
+                                            <?php } ?>
+                                        </select>
                                     </div>
-                                    <div class="mb-3">
+                                    <div class="mb-3 role-checkbox" id="privilegesContainer">
                                         <label class="form-label">Privileges</label><br>
                                         <?php foreach ($privileges as $privilege): ?>
                                             <div class="form-check form-check-inline">
@@ -67,12 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     id="privilege<?= $privilege['id'] ?>" name="privileges[]"
                                                     value="<?= $privilege['id'] ?>" <?= in_array($privilege['id'], $rolePrivileges) ? 'checked' : '' ?>>
                                                 <label class="form-check-label"
-                                                    for="privilege<?= $privilege['id'] ?>"><?= $privilege['name'] ?></label>
+                                                    for="privilege<?= $privilege['id'] ?>"><?= $privilege['NAME'] ?></label>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
                                     <input type="hidden" name="role_id" value="<?= $role['id'] ?? '' ?>">
-                                    <button type="submit" class="btn btn-primary"><?= $submitButton ?></button>
+                                    <button type="submit" class="btn btn-primary role-submit">Update</button>
                                     <a href="index.php" class="btn btn-secondary">Cancel</a>
                                 </form>
                             </div>
