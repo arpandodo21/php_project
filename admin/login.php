@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo json_encode(array('status' => 'success'));
             exit;
         } else {
-            echo json_encode(array('status' => 'error'));
+            echo json_encode(array('status' => 'error','message' => 'Please enter correct user email and password!'));
             exit;
         }
     }
@@ -139,8 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     position: "top-end",
                                     icon: "error",
                                     title: "Login Unsuccessful",
+                                    text: res.message,
                                     showConfirmButton: false,
-                                    timer: 1500
+                                    timer: 3000
                                 });
                             }
 

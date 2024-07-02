@@ -12,7 +12,6 @@
 </footer>
 </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script
     src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
@@ -98,46 +97,7 @@
 
     // }
 
-    function loadRolePrivileges(elem) {
-        
-        if (elem.value!="") {
-            let roleId = elem.value;
-            $.ajax({
-                url: '<?= $object->baseUrl . '/common.php' ?>',
-                method: 'POST',
-                data: { role_id: roleId },
-                beforeSend: function () {
-                    $('body').LoadingOverlay('show');
-                },
-                success: function (data) {
-                    // let rolePrivileges = JSON.parse(data);
-                    console.log(data);
-                    // $('#privilegesContainer input[type="checkbox"]').each(function () {
-                    //     $(this).prop('checked', rolePrivileges.includes($(this).val()));
-                    // });
-                    $('body').LoadingOverlay('hide');
-                },
-                error:function(err){
-                    console.log(err);
-                }
-            });
-        } else {
-            $('#privilegesContainer input[type="checkbox"]').prop('checked', false);
-        }
-    }
-
-    function updateRolePrivileges() {
-        var formData = $('#rolePrivilegesForm').serialize();
-        console.log(formData)
-        // $.ajax({
-        //     url: 'update_role_privileges.php',
-        //     method: 'POST',
-        //     data: formData,
-        //     success: function (response) {
-        //         alert(response);
-        //     }
-        // });
-    }
+    
 
 
 </script>

@@ -288,21 +288,44 @@ class database
 
     /* To get User Id roles priviledges
      */
-    public function getUserWiseRoles(){
+    public function getUserWiseRoles()
+    {
 
     }
 
-    public function getRoleWisePriviledges($roleId){
-        if($roleId){
-            $query = "SELECT r.id AS roleId, r.name AS role_name, GROUP_CONCAT( p.name ORDER BY p.name SEPARATOR ', ' ) AS PRIVILEGES FROM roles r JOIN role_privileges rp ON r.id = rp.role_id JOIN PRIVILEGES p ON rp.privilege_id = p.id WHERE r.id=$roleId GROUP BY r.id, r.name";
+    public function getRoleWisePrivileges($roleId)
+    {
+        $this->data= [];
+        if ($roleId) {
+            $query = "SELECT r.id AS roleId, GROUP_CONCAT( p.id SEPARATOR ', ' ) AS PRIVILEGES_ID FROM roles r JOIN role_privileges rp ON r.id = rp.role_id JOIN PRIVILEGES p ON rp.privilege_id = p.id WHERE r.id=$roleId GROUP BY r.id, r.name";
 
             $result = $this->conn->query($query);
-            if($result->num_rows > 0){
-                while($row = $result->fetch_assoc()) {
-                    $this->data[] = explode(', ', $row['privileges']);
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $this->data = explode(', ', $row['PRIVILEGES_ID']);
+                    // $this->data[] = $row;
                 }
             }
             return $this->data;
+        }
+    }
+
+    public function updateRoleWisePrivileges($roleId, $privileges)
+    {
+        if ($roleId) {
+            $query = "DELETE from role_privileges WHERE id $roleId";
+            $result = $this->conn->query($query);
+
+            if ($privileges) {
+                $stmt = $this->conn->prepare("INSERT INTO role_privileges (role_id, privilege_id) VALUES (?, ?)");
+                foreach ($privileges as $privilegeId) {
+                    $stmt->bind_param("ii", $roleId, $privilegeId);
+                    $stmt->execute();
+                }
+                $stmt->close();
+
+                return true;
+            }
         }
     }
 

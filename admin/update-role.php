@@ -28,6 +28,7 @@ $rolePrivileges = $object->get_all_records('privileges', ['id']);
                                 <form method="POST" id="rolePrivilegesForm">
                                     <div class="mb-3">
                                         <label for="role_id" class="form-label">Role Name</label>
+                                        <input type="hidden" name="form_type" value="role_update">
                                         <select name="role_id" class="form-control" onchange="loadRolePrivileges(this)">
                                             <option value="">Select Role</option>
                                             <?php foreach ($roles as $role) { ?>
@@ -49,7 +50,7 @@ $rolePrivileges = $object->get_all_records('privileges', ['id']);
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
-                                    <input type="hidden" name="role_id" value="<?= $role['id'] ?? '' ?>">
+                                    <!-- <input type="hidden" name="role_id" value="<?= $role['id'] ?? '' ?>"> -->
                                     <button type="submit" class="btn btn-primary role-submit">Update</button>
                                     <a href="index.php" class="btn btn-secondary">Cancel</a>
                                 </form>
@@ -60,5 +61,81 @@ $rolePrivileges = $object->get_all_records('privileges', ['id']);
             </div>
         </main>
 
+        <script>
+            function loadRolePrivileges(elem) {
 
+                if (elem.value != "") {
+                    $('body').LoadingOverlay('show');
+                    let roleId = elem.value;
+                    $.ajax({
+                        url: '<?= $object->baseUrl . '/common.php' ?>',
+                        method: 'POST',
+                        data: { role_id: roleId,form_type:'fetch_role' },
+                        success: function (data) {
+                            let rolePrivileges = JSON.parse(data);
+                            console.log(rolePrivileges);
+                            if (rolePrivileges.status === true) {
+                                $('#privilegesContainer input[type="checkbox"]').each(function () {
+                                    $(this).prop('checked', rolePrivileges.privileges.includes($(this).val()));
+                                    // console.log(rolePrivileges.privileges.includes($(this).val()));
+                                });
+                            } else {
+                                $('#privilegesContainer input[type="checkbox"]').each(function () {
+                                    $(this).prop('checked', false);
+                                });
+                            }
+                            $('body').LoadingOverlay('hide');
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                } else {
+                    $('#privilegesContainer input[type="checkbox"]').prop('checked', false);
+                    $('body').LoadingOverlay('hide');
+                }
+            }
+
+            function updateRolePrivileges() {
+                var formData = $('#rolePrivilegesForm').serialize();
+                $('body').LoadingOverlay('show');
+                if ($('select[name="role_id"]').val() != '') {
+                    $.ajax({
+                        url: '<?= $object->baseUrl . '/common.php' ?>',
+                        method: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            res = JSON.parse(response);
+                            $('body').LoadingOverlay('hide');
+                            if (res.status === true) {
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "success",
+                                    title: res.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            } else {
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "error",
+                                    title: res.message,
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    $('body').LoadingOverlay('hide');
+                    Swal.fire({
+                        position: "top-end",
+                        icon: "error",
+                        title: "Please select a role",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            }
+        </script>
         <?php require_once './layouts/footer.php' ?>
