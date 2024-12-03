@@ -295,7 +295,7 @@ class database
 
     public function getRoleWisePrivileges($roleId)
     {
-        $this->data= [];
+        $this->data = [];
         if ($roleId) {
             $query = "SELECT r.id AS roleId, GROUP_CONCAT( p.id SEPARATOR ', ' ) AS PRIVILEGES_ID FROM roles r JOIN role_privileges rp ON r.id = rp.role_id JOIN PRIVILEGES p ON rp.privilege_id = p.id WHERE r.id=$roleId GROUP BY r.id, r.name";
 
@@ -313,7 +313,7 @@ class database
     public function updateRoleWisePrivileges($roleId, $privileges)
     {
         if ($roleId) {
-            $query = "DELETE from role_privileges WHERE id $roleId";
+            $query = "DELETE FROM role_privileges WHERE role_id = $roleId";
             $result = $this->conn->query($query);
 
             if ($privileges) {
@@ -328,6 +328,46 @@ class database
             }
         }
     }
+
+    public function getRolePermission($userId)
+    {
+        if (!$userId) {
+            return []; // Return an empty array if no userId is provided
+        }
+
+        $query = "
+        SELECT 
+            p.name AS permission_name, 
+            p.display_name AS display_name, 
+            p.icon, 
+            p.link 
+        FROM 
+            privileges p 
+        JOIN role_privileges rp ON rp.privilege_id = p.id 
+        JOIN roles r ON r.id = rp.role_id 
+        JOIN users u ON rp.role_id = r.id 
+        WHERE 
+            u.id = ?
+    ";
+
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            die("Prepare failed: " . $this->conn->error); // Debugging aid
+        }
+
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $permissions = [];
+        while ($row = $result->fetch_assoc()) {
+            $permissions[] = $row;
+        }
+
+        $stmt->close();
+        return $permissions;
+    }
+
 
     public function __destruct()
     {

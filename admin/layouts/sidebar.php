@@ -1,3 +1,8 @@
+<?php
+if (!empty($userData)) {
+    $permissions = $object->getRolePermission($userData['user_id']);
+}
+?>
 <div id="layoutSidenav_nav">
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
         <div class="sb-sidenav-menu">
@@ -5,79 +10,50 @@
                 <?php
                 $current_page = basename($_SERVER['SCRIPT_NAME']);
                 $pageName = '';
-                // Determine which collapsible section (if any) should be expanded
-                $collapseProductsExpanded = in_array($current_page, ['products.php', 'add-product.php']) ? 'show' : '';
-                $collapseProductsActive = in_array($current_page, ['products.php', 'add-product.php']) ? 'true' :
-                    'false';
 
-                $collapseRolesExpanded = in_array($current_page, ['roles.php', 'update-role.php']) ? 'show' : '';
-                $collapseRolesActive = in_array($current_page, ['roles.php', 'update-role.php']) ? 'true' : 'false';
-
-                // Loop through the links and generate the navigation items
-                foreach ($object->pages['links'] as $file => $title) {
-                    // Determine if the link is active
-                    $active = ($current_page === $file) ? 'active' : '';
-                    if($current_page === $file) $pageName = $title;
-                    // Determine the icon
-                    $icon = $object->pages['icons'][$file];
-                    // Determine the icon class
-                    $iconClass = ($file === 'products.php') ? 'fa-brands' : 'fas';
-
-                    // Check if the link is for "Products" or "Roles"
-                    if ($file === 'products.php' || $file === 'add-product.php') {
-                        continue; // Skip the regular product link, handled in the collapsible section
-                    } elseif ($file === 'roles.php' || $file === 'update-role.php') {
-                        continue; // Skip the regular roles link, handled in the collapsible section
-                    } else {
-                        echo "
-                <a class='nav-link $active' href='{$object->baseUrl}admin/$file'>
-                    <div class='sb-nav-link-icon'><i class='$iconClass $icon'></i></div>
-                    $title
-                </a>
-                ";
-                    }
+                // Group permissions by categories for collapsible sections
+                $categories = [];
+                foreach ($permissions as $permission) {
+                    $categories[$permission['permission_name']][] = $permission;
                 }
 
-                // Add the collapsible section for "Products"
-                echo "
-                <a class='nav-link collapsed' href='#' data-bs-toggle='collapse' data-bs-target='#collapseProducts'
-                    aria-expanded='$collapseProductsActive' aria-controls='collapseProducts'>
-                    <div class='sb-nav-link-icon'><i class='fa-brands fa-product-hunt'></i></div>
-                    Products
-                    <div class='sb-sidenav-collapse-arrow'><i class='fas fa-angle-down'></i></div>
-                </a>
-                <div class='collapse $collapseProductsExpanded' id='collapseProducts' aria-labelledby='headingProducts'
-                    data-bs-parent='#sidenavAccordion'>
-                    <nav class='sb-sidenav-menu-nested nav'>
-                        <a class='nav-link' href='{$object->baseUrl}admin/products.php'>View Products</a>
-                        <a class='nav-link' href='{$object->baseUrl}admin/add-product.php'>Add Product</a>
-                    </nav>
-                </div>
-                ";
+                foreach ($categories as $category => $links) {
+                    // Handle collapsible sections dynamically
+                    $isActive = array_reduce($links, function ($carry, $link) use ($current_page) {
+                        return $carry || ($current_page === basename($link['link']));
+                    }, false);
 
-                // Add the collapsible section for "Roles"
-                echo "
-                <a class='nav-link collapsed' href='#' data-bs-toggle='collapse' data-bs-target='#collapseRoles'
-                    aria-expanded='$collapseRolesActive' aria-controls='collapseRoles'>
-                    <div class='sb-nav-link-icon'><i class='fas fa-user-shield'></i></div>
-                    User Role
-                    <div class='sb-sidenav-collapse-arrow'><i class='fas fa-angle-down'></i></div>
-                </a>
-                <div class='collapse $collapseRolesExpanded' id='collapseRoles' aria-labelledby='headingRoles'
-                    data-bs-parent='#sidenavAccordion'>
-                    <nav class='sb-sidenav-menu-nested nav'>
-                        <a class='nav-link' href='{$object->baseUrl}admin/roles.php'>View Roles</a>
-                        <a class='nav-link' href='{$object->baseUrl}admin/update-role.php'>Update Role</a>
-                    </nav>
-                </div>
-                ";
+                    $collapseExpanded = $isActive ? 'show' : '';
+                    $collapseActive = $isActive ? 'true' : 'false';
+
+                    echo "
+                    <a class='nav-link collapsed' href='#' data-bs-toggle='collapse' data-bs-target='#collapse$category'
+                        aria-expanded='$collapseActive' aria-controls='collapse$category'>
+                        <div class='sb-nav-link-icon'><i class='fas fa-folder'></i></div>
+                        $category
+                        <div class='sb-sidenav-collapse-arrow'><i class='fas fa-angle-down'></i></div>
+                    </a>
+                    <div class='collapse $collapseExpanded' id='collapse$category' aria-labelledby='heading$category'
+                        data-bs-parent='#sidenavAccordion'>
+                        <nav class='sb-sidenav-menu-nested nav'>";
+
+                    foreach ($links as $link) {
+                        $active = ($current_page === basename($link['link'])) ? 'active' : '';
+                        echo "
+                        <a class='nav-link $active' href='{$link['link']}'>
+                            <div class='sb-nav-link-icon'><i class='{$link['icon']}'></i></div>
+                            {$link['display_name']}
+                        </a>";
+                    }
+
+                    echo "</nav></div>";
+                }
                 ?>
-
             </div>
         </div>
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            <?= $userData['name']; ?>
+            <?= htmlspecialchars($userData['name']); ?>
         </div>
     </nav>
 </div>

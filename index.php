@@ -1,7 +1,7 @@
 <?php require_once ('common.php');
 // echo $obj->make_new_table('test',['id'=>'INT AUTO_INCREMENT PRIMARY KEY','name' => 'varchar(255)']);
 // echo $obj->drop_table('test');
-$object->add_data_to_table('users', [['name' => 'arpan', 'email' => 'abc@abc.com', 'password' => 'password', 'password_original' => 'password'], ['name' => 'arpan2', 'email' => 'abc2@abc.com', 'password' => 'password2', 'password_original' => 'password2']]); die;
+$object->add_data_to_table('users', [['name' => 'arpan', 'email' => 'abc@abc.com', 'password' => 'password', 'password_original' => 'password'], ['name' => 'arpan2', 'email' => 'abc2@abc.com', 'password' => 'password2', 'password_original' => 'password2']]);
 // echo "<pre>"; 
 // print_r($obj->get_row_from_table('test','name',['age'=>28,'name'=>'Arpan']));
 // echo "</pre>";
